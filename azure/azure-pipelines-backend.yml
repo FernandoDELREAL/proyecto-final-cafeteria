@@ -5,8 +5,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  # dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
-  # azureServiceConnection: 'sc-azure-cafeteria-v2'
+  dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
+  azureServiceConnection: 'sc-azure-cafeteria-v2'
   dockerHubRepo: 'fernandodelreal14/cafeteria-backend'
   appName: 'cafeteria-backend-app'
   dockerTag: '$(Build.BuildId)'
