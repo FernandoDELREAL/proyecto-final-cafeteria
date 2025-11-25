@@ -1,0 +1,71 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerHubServiceConnection: 'sc-dockerhub-cafeteria'
+  azureServiceConnection: 'sc-azure-cafeteria'
+  dockerHubRepo: 'fernandodelreal14/cafeteria-backend'
+  appName: 'cafeteria-backend-app'   # ← nombre de la web app en Azure
+  dockerTag: '$(Build.BuildId)'
+
+steps:
+
+# 1. Checkout
+- task: Checkout@1
+  displayName: "Checkout del código"
+
+# 2. Instalar Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: "Instalar Node.js"
+
+# 3. Instalar dependencias
+- script: npm install
+  workingDirectory: 'cafeteria-iteso-backend'
+  displayName: "Instalar dependencias backend"
+
+# 4. Correr pruebas
+- script: npm test
+  workingDirectory: 'cafeteria-iteso-backend'
+  displayName: "Ejecutar pruebas"
+
+# 5. Login en Docker Hub
+- task: Docker@2
+  displayName: "Login en Docker Hub"
+  inputs:
+    command: login
+    containerRegistry: $(dockerHubServiceConnection)
+
+# 6. Construir imagen Docker
+- task: Docker@2
+  displayName: "Construir imagen Docker del backend"
+  inputs:
+    command: build
+    repository: $(dockerHubRepo)
+    tags: |
+      latest
+      $(dockerTag)
+    Dockerfile: 'cafeteria-iteso-backend/Dockerfile'
+    buildContext: 'cafeteria-iteso-backend'
+
+# 7. Push a Docker Hub
+- task: Docker@2
+  displayName: "Subir imagen a Docker Hub"
+  inputs:
+    command: push
+    repository: $(dockerHubRepo)
+    tags: |
+      latest
+      $(dockerTag)
+
+# 8. Deploy a Azure Web App
+- task: AzureWebAppContainer@1
+  displayName: "Desplegar backend a Azure Web App"
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    appName: $(appName)
+    imageName: "$(dockerHubRepo):latest"

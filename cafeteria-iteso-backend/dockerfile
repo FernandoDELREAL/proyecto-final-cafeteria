@@ -1,0 +1,23 @@
+# Imagen base ligera
+FROM node:20-alpine
+
+# Crear directorio de trabajo en el contenedor
+WORKDIR /usr/src/app
+
+# Copiar package.json y package-lock.json
+COPY package*.json ./
+
+# Instalar solo dependencias necesarias para producción
+RUN npm install --omit=dev
+
+# Copiar el resto del código del backend
+COPY . .
+
+# Variables de entorno (pueden cambiar en Azure)
+ENV PORT=3000
+
+# Exponer el puerto
+EXPOSE 3000
+
+# Comando para producción
+CMD ["npm", "start"]

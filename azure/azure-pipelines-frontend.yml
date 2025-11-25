@@ -1,0 +1,65 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerHubServiceConnection: 'sc-dockerhub-cafeteria'
+  azureServiceConnection: 'sc-azure-cafeteria'
+  dockerHubRepo: 'fernandodelreal14/cafeteria-frontend'
+  appName: 'cafeteria-frontend-app'
+  dockerTag: '$(Build.BuildId)'
+
+steps:
+
+# 1. Checkout
+- task: Checkout@1
+  displayName: "Checkout del código"
+
+# 2. (Opcional) Instalar Node.js si el frontend necesita build
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: "Instalar Node.js"
+
+# 3. (Opcional) Instalar dependencias
+- script: echo "Frontend sin dependencias npm"
+  displayName: "Sin dependencias"
+
+# 4. Login en Docker Hub
+- task: Docker@2
+  displayName: "Login en Docker Hub"
+  inputs:
+    command: login
+    containerRegistry: $(dockerHubServiceConnection)
+
+# 5. Build de imagen
+- task: Docker@2
+  displayName: "Construir imagen Docker del frontend"
+  inputs:
+    command: build
+    repository: $(dockerHubRepo)
+    tags: |
+      latest
+      $(dockerTag)
+    Dockerfile: 'cafeteria-iteso-frontend/Dockerfile'
+    buildContext: 'cafeteria-iteso-frontend'
+
+# 6. Push a Docker Hub
+- task: Docker@2
+  displayName: "Subir imagen del frontend a Docker Hub"
+  inputs:
+    command: push
+    repository: $(dockerHubRepo)
+    tags: |
+      latest
+      $(dockerTag)
+
+# 7. Deploy a Azure Web App
+- task: AzureWebAppContainer@1
+  displayName: "Desplegar frontend a Azure Web App"
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    appName: $(appName)
+    imageName: "$(dockerHubRepo):latest"

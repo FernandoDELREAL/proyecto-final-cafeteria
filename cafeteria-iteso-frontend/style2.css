@@ -1,0 +1,52 @@
+    body {
+      background-color: #024a7a;
+      color: white;
+      font-family: 'Rubik', sans-serif;
+        font-weight: 400;
+    }
+
+    h1.section-title {
+      text-align: center;
+      color: #ADD8E6;
+      margin: 30px 0 20px;
+      font-family: 'Rubik Mono One', sans-serif;
+    }
+    .carousel img {
+      object-fit: cover;
+      height: 500px;
+    }
+    .navbar .bi {
+      font-size: 1.4rem;
+    }
+    .navbar{
+      background-color: #d2e2ee !important; /* azul oscuro como ejemplo */
+      
+    }
+    .navbar a,
+    .navbar span,
+    .navbar button {
+     color: rgb(0, 6, 37) !important;
+     font-family: 'Quicksand', sans-serif;   
+     font-size: large;
+    }
+    .accordion-button {
+        background-color: #d2e2ee;     
+        color: rgb(12, 7, 7);    
+        font-family: 'Quicksand', sans-serif;             
+    }
+
+    .accordion-button:not(.collapsed) {
+         background-color: #024a7a;     
+         color: white;
+    }
+
+    .accordion-body {
+         background-color: #f1f1f1;     
+        color: #333;                   
+    }
+
+    .accordion-item {
+         border: 1px solid #ccc;       
+    }
+
+
