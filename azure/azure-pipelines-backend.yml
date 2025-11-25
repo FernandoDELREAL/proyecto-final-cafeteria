@@ -38,7 +38,7 @@ steps:
   displayName: "Login en Docker Hub"
   inputs:
     command: login
-    containerRegistry: $(dockerHubServiceConnection)
+    containerRegistry: 'sc-dockerhub-cafeteria'
 
 # 6. Construir imagen Docker
 - task: Docker@2
@@ -66,6 +66,6 @@ steps:
 - task: AzureWebAppContainer@1
   displayName: "Desplegar backend a Azure Web App"
   inputs:
-    azureSubscription: $(azureServiceConnection)
+    azureSubscription: 'sc-azure-cafeteria'
     appName: $(appName)
     imageName: "$(dockerHubRepo):latest"
