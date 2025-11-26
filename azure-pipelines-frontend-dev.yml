@@ -1,0 +1,65 @@
+trigger:
+- main
+
+pool:
+  name: cafeteria-pool
+
+variables:
+  dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
+  azureServiceConnection: 'sc-azure-cafeteria-v2'
+  dockerHubRepo: 'fernandodelreal14/cafeteria-frontend'
+  appName: 'cafeteria-frontend-dev'
+  dockerTag: '$(Build.BuildId)'
+
+steps:
+
+- checkout: self
+  clean: true
+  displayName: "Checkout del código"
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: "Instalar Node.js"
+
+- script: npm install
+  workingDirectory: 'cafeteria-iteso-frontend'
+  displayName: "Instalar dependencias"
+
+# Si tu frontend tiene script de build (React, Next, Vite)
+- script: npm run build
+  workingDirectory: 'cafeteria-iteso-frontend'
+  displayName: "Build de frontend"
+
+- task: Docker@2
+  displayName: "Login Docker Hub"
+  inputs:
+    command: login
+    containerRegistry: $(dockerHubServiceConnection)
+
+- task: Docker@2
+  displayName: "Build imagen frontend DEV"
+  inputs:
+    command: build
+    repository: $(dockerHubRepo)
+    tags: |
+      dev
+      $(dockerTag)
+    Dockerfile: 'cafeteria-iteso-frontend/Dockerfile'
+    buildContext: 'cafeteria-iteso-frontend'
+
+- task: Docker@2
+  displayName: "Push imagen frontend DEV"
+  inputs:
+    command: push
+    repository: $(dockerHubRepo)
+    tags: |
+      dev
+      $(dockerTag)
+
+- task: AzureWebAppContainer@1
+  displayName: "Deploy frontend DEV"
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    appName: $(appName)
+    imageName: "$(dockerHubRepo):dev"
