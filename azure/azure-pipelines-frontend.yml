@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: cafeteria-pool
 
 variables:
   dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
@@ -13,18 +13,20 @@ variables:
 
 steps:
 
-# 1. Checkout
-- task: Checkout@1
+# 1. Checkout (OBLIGATORIO en self-hosted)
+- checkout: self
+  clean: true
   displayName: "Checkout del código"
 
-# 2. (Opcional) Instalar Node.js si el frontend necesita build
+# 2. Instalar Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
   displayName: "Instalar Node.js"
 
-# 3. (Opcional) Instalar dependencias
+# 3. Instalar dependencias (tu frontend no usa npm)
 - script: echo "Frontend sin dependencias npm"
+  workingDirectory: 'cafeteria-iteso-frontend'
   displayName: "Sin dependencias"
 
 # 4. Login en Docker Hub
@@ -34,7 +36,7 @@ steps:
     command: login
     containerRegistry: $(dockerHubServiceConnection)
 
-# 5. Build de imagen
+# 5. Construir imagen Docker del frontend
 - task: Docker@2
   displayName: "Construir imagen Docker del frontend"
   inputs:
@@ -56,10 +58,11 @@ steps:
       latest
       $(dockerTag)
 
-# 7. Deploy a Azure Web App
+# 7. Deploy en Azure Web App
 - task: AzureWebAppContainer@1
   displayName: "Desplegar frontend a Azure Web App"
   inputs:
     azureSubscription: $(azureServiceConnection)
     appName: $(appName)
     imageName: "$(dockerHubRepo):latest"
+
