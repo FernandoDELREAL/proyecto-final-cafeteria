@@ -1,0 +1,72 @@
+trigger:
+- main
+
+pool:
+  name: cafeteria-pool
+
+variables:
+  dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
+  azureServiceConnection: 'sc-azure-cafeteria-v2'
+  dockerHubRepo: 'fernandodelreal14/cafeteria-backend'
+  appName: 'cafeteria-backend-dev'
+  dockerTag: '$(Build.BuildId)'
+
+steps:
+
+# 1. Checkout
+- checkout: self
+  clean: true
+  displayName: "Checkout del código"
+
+# 2. Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: "Instalar Node.js"
+
+# 3. Instalar dependencias
+- script: npm install
+  workingDirectory: 'cafeteria-iteso-backend'
+  displayName: "Instalar dependencias"
+
+# 4. Correr pruebas
+- script: npm test
+  workingDirectory: 'cafeteria-iteso-backend'
+  displayName: "Ejecutar pruebas"
+
+# 5. Docker Login
+- task: Docker@2
+  displayName: "Login en Docker Hub"
+  inputs:
+    command: login
+    containerRegistry: $(dockerHubServiceConnection)
+
+# 6. Docker Build
+- task: Docker@2
+  displayName: "Construir imagen backend DEV"
+  inputs:
+    command: build
+    repository: $(dockerHubRepo)
+    tags: |
+      dev
+      $(dockerTag)
+    Dockerfile: 'cafeteria-iteso-backend/Dockerfile'
+    buildContext: 'cafeteria-iteso-backend'
+
+# 7. Docker Push
+- task: Docker@2
+  displayName: "Push imagen backend DEV"
+  inputs:
+    command: push
+    repository: $(dockerHubRepo)
+    tags: |
+      dev
+      $(dockerTag)
+
+# 8. Deploy WebApp DEV
+- task: AzureWebAppContainer@1
+  displayName: "Deploy backend DEV"
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    appName: $(appName)
+    imageName: "$(dockerHubRepo):dev"
