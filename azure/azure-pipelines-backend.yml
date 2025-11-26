@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: cafeteria-pool
 
 variables:
   dockerHubServiceConnection: 'sc-dockerhub-cafeteria-v2'
