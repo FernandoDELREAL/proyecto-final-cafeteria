@@ -13,7 +13,7 @@ variables:
 
 steps:
 
-# 1. Checkout v2
+# 1. Checkout v3
 - checkout: self
   clean: true
   displayName: "Checkout del código"
