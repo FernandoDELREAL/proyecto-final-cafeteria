@@ -16,6 +16,9 @@ steps:
 # # 1. Checkout
 # - task: Checkout@1
 #   displayName: "Checkout del código"
+- checkout: self
+  clean: true
+  displayName: "Checkout del repositorio"
 
 # 2. Instalar Node.js
 - task: NodeTool@0
