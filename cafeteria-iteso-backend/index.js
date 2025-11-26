@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const path = require('path');
-app.use(express.static(path.join(__dirname, '../cafeteria-iteso-frontend')));
+//app.use(express.static(path.join(__dirname, '../cafeteria-iteso-frontend')));
 
 // URL local o Atlas
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/cafeteria-iteso';
