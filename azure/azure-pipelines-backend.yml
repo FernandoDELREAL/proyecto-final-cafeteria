@@ -15,7 +15,7 @@ steps:
 
 # # 1. Checkout
 # - task: Checkout@1
-#   displayName: "Checkout del código"
+#   displayName: "Checkout del código"v2
 - checkout: self
   clean: true
   displayName: "Checkout del repositorio"
