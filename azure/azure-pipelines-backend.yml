@@ -13,12 +13,10 @@ variables:
 
 steps:
 
-# # 1. Checkout
-# - task: Checkout@1
-#   displayName: "Checkout del código"v2
+# 1. Checkout (obligatorio en self-hosted)
 - checkout: self
   clean: true
-  displayName: "Checkout del repositorio"
+  displayName: "Checkout del código"
 
 # 2. Instalar Node.js
 - task: NodeTool@0
@@ -65,10 +63,11 @@ steps:
       latest
       $(dockerTag)
 
-# 8. Deploy a Azure Web App
+# 8. Deploy en Azure Web App
 - task: AzureWebAppContainer@1
   displayName: "Desplegar backend a Azure Web App"
   inputs:
     azureSubscription: $(azureServiceConnection)
     appName: $(appName)
     imageName: "$(dockerHubRepo):latest"
+
