@@ -1,4 +1,4 @@
-const db = require('../BD');
+//const db = require('../BD');
 
 const obtenerUsuarios = (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
