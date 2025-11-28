@@ -29,7 +29,7 @@ steps:
   workingDirectory: 'cafeteria-iteso-frontend'
   displayName: "Sin dependencias"
 
-# 4. Login en Docker Hub
+# 4. Login en Docker Hub v2
 - task: Docker@2
   displayName: "Login en Docker Hub"
   inputs:
